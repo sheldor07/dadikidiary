@@ -10,4 +10,11 @@ module.exports = {
   uploadLimits: {
     fileSize: 5 * 1024 * 1024,
   },
+  email: {
+    sendgridApiKey: process.env.SENDGRID_API_KEY,
+    fromAddress: process.env.EMAIL_FROM_ADDRESS,
+  },
+  wordpress: {
+    postByEmailAddress: process.env.WP_POST_BY_EMAIL_ADDRESS,
+  },
 };

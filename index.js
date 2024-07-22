@@ -7,6 +7,7 @@ const {
   getAnalysisResult,
   extractContent,
 } = require("./performOCR");
+const { postToWordPress } = require("./createPost");
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -49,10 +50,14 @@ app.post("/upload", upload.single("image"), async (req, res) => {
       .status(500)
       .send(`An error occurred while processing the image ${error.message}`);
   }
-  res.status(200).json({
-    message: "Text extracted successfully",
-    content: content,
-  });
+  try {
+    await postToWordPress(req.body.title, content);
+  } catch (error) {
+    console.error("Error:", error.message);
+    return res
+      .status(500)
+      .send(`An error occurred while posting to WordPress ${error.message}`);
+  }
 });
 
 app.use((err, req, res, next) => {

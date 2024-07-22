@@ -6,7 +6,9 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon index.js",
-    "start": "node index.js"
+    "start": "node index.js",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix"
   },
   "repository": {
     "type": "git",
@@ -26,6 +28,7 @@
     "multer": "^1.4.5-lts.1"
   },
   "devDependencies": {
+    "eslint": "^9.7.0",
     "nodemon": "^3.1.4"
   }
 }

@@ -1,12 +1,15 @@
 const axios = require("axios");
-async function analyzeDocument(endpoint, subscriptionKey, modelId, fileBuffer) {
+const config = require("./config");
+async function analyzeDocument(fileBuffer) {
+  console.log(config);
   const apiVersion = "2024-02-29-preview";
-  const url = `${endpoint}/documentintelligence/documentModels/${modelId}:analyze?_overload=analyzeDocument&api-version=${apiVersion}`;
+  const url = `${config.azure.documentsEndpoint}/documentintelligence/documentModels/${config.azure.modelId}:analyze?_overload=analyzeDocument&api-version=${apiVersion}`;
 
   const headers = {
     "Content-Type": "application/json",
-    "Ocp-Apim-Subscription-Key": subscriptionKey,
+    "Ocp-Apim-Subscription-Key": config.azure.documentsKey,
   };
+
   const base64Source = fileBuffer.toString("base64");
   const data = {
     base64Source: base64Source,
@@ -14,7 +17,6 @@ async function analyzeDocument(endpoint, subscriptionKey, modelId, fileBuffer) {
 
   try {
     const response = await axios.post(url, data, { headers });
-
     if (response.status === 202) {
       const operationLocation = response.headers["operation-location"];
       console.log(
@@ -31,22 +33,19 @@ async function analyzeDocument(endpoint, subscriptionKey, modelId, fileBuffer) {
   }
 }
 
-async function getAnalysisResult(operationLocation, subscriptionKey) {
+async function getAnalysisResult(operationLocation) {
   const headers = {
-    "Ocp-Apim-Subscription-Key": subscriptionKey,
+    "Ocp-Apim-Subscription-Key": config.azure.documentsKey,
   };
 
   while (true) {
     try {
       const response = await axios.get(operationLocation, { headers });
-
       if (response.data.status === "succeeded") {
         return response.data;
       } else if (response.data.status === "failed") {
         throw new Error("Document analysis failed");
       }
-
-      // Wait before checking again
       await new Promise((resolve) => setTimeout(resolve, 2000));
     } catch (error) {
       console.error("Error getting analysis result:", error.message);
@@ -66,7 +65,7 @@ function extractContent(jsonResult) {
   let extractedContent = "";
   paragraphs.forEach((paragraph) => {
     if (paragraph.content) {
-      extractedContent += paragraph.content + "\n";
+      extractedContent += paragraph.content + " ";
     }
   });
   return extractedContent.trim();

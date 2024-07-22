@@ -1,21 +1,18 @@
 require("dotenv").config();
+const express = require("express");
+const multer = require("multer");
+const config = require("./config");
 const {
   analyzeDocument,
   getAnalysisResult,
   extractContent,
 } = require("./performOCR");
-const express = require("express");
-const multer = require("multer");
 
 const app = express();
 const port = process.env.PORT || 3000;
 
-//configuring multer
-/* storage defines how and where multer should store the uploaded files
- in this case, we are using memory storage*/
+const storage = multer.memoryStorage(); // storage defines how and where multer should store the uploaded files in this case, we are using memory storage*/
 
-const storage = multer.memoryStorage();
-/* upload is a configured multer instance that we'll use as a middleware */
 const upload = multer({
   storage: storage,
   fileFilter: function (req, file, cb) {
@@ -26,46 +23,34 @@ const upload = multer({
     }
   },
   limits: {
-    fileSize: 5 * 1024 * 1024, // no larger than 5mb
+    fileSize: config.uploadLimits.fileSize,
   },
-});
+}); //  upload is a configured multer instance that we'll use as a middleware
 
 app.use(express.json());
 
 app.post("/upload", upload.single("image"), async (req, res) => {
-  //   // denugging
-
-  //   console.log(req.file);
-  //   console.log(req.body);
   if (!req.body.title) {
     return res.status(400).send("Please provide a title");
   }
   if (!req.file) {
     return res.status(400).send("Please upload a file");
   }
-
   const fileBuffer = req.file.buffer;
   let content = "";
   try {
-    const endpoint = process.env.AZURE_DOCUMENT_ENDPOINT;
-    const subscriptionKey = process.env.AZURE_DOCUMENT_KEY;
-    const modelId = "prebuilt-read";
-    const operationLocation = await analyzeDocument(
-      endpoint,
-      subscriptionKey,
-      modelId,
-      fileBuffer
-    );
-    const result = await getAnalysisResult(operationLocation, subscriptionKey);
+    console.log("Analyzing document...");
+    const operationLocation = await analyzeDocument(fileBuffer);
+    const result = await getAnalysisResult(operationLocation);
     content = extractContent(result);
   } catch (error) {
     console.error("Error:", error.message);
+    return res
+      .status(500)
+      .send(`An error occurred while processing the image ${error.message}`);
   }
-  // converting image to ocr
-  // uploading ocr to blog
-
   res.status(200).json({
-    message: "text extracted successfully",
+    message: "Text extracted successfully",
     content: content,
   });
 });
@@ -80,6 +65,7 @@ app.use((err, req, res, next) => {
     res.status(500).send(err.message);
   }
 });
+
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });

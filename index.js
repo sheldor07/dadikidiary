@@ -1,3 +1,9 @@
+require("dotenv").config();
+const {
+  analyzeDocument,
+  getAnalysisResult,
+  extractContent,
+} = require("./performOCR");
 const express = require("express");
 const multer = require("multer");
 
@@ -26,11 +32,11 @@ const upload = multer({
 
 app.use(express.json());
 
-app.post("/upload", upload.single("image"), (req, res) => {
-  // denugging
+app.post("/upload", upload.single("image"), async (req, res) => {
+  //   // denugging
 
-  console.log(req.file);
-  console.log(req.body);
+  //   console.log(req.file);
+  //   console.log(req.body);
   if (!req.body.title) {
     return res.status(400).send("Please provide a title");
   }
@@ -38,12 +44,29 @@ app.post("/upload", upload.single("image"), (req, res) => {
     return res.status(400).send("Please upload a file");
   }
 
+  const fileBuffer = req.file.buffer;
+  let content = "";
+  try {
+    const endpoint = process.env.AZURE_DOCUMENT_ENDPOINT;
+    const subscriptionKey = process.env.AZURE_DOCUMENT_KEY;
+    const modelId = "prebuilt-read";
+    const operationLocation = await analyzeDocument(
+      endpoint,
+      subscriptionKey,
+      modelId,
+      fileBuffer
+    );
+    const result = await getAnalysisResult(operationLocation, subscriptionKey);
+    content = extractContent(result);
+  } catch (error) {
+    console.error("Error:", error.message);
+  }
   // converting image to ocr
   // uploading ocr to blog
 
   res.status(200).json({
-    message: "Blog post created successfully",
-    fileSize: req.file.size,
+    message: "text extracted successfully",
+    content: content,
   });
 });
 

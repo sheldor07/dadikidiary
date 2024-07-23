@@ -1,6 +1,3 @@
-# Docs for the Azure Web Apps Deploy action: https://github.com/azure/functions-action
-# More GitHub Actions for Azure: https://github.com/Azure/actions
-
 name: Build and deploy Node.js project to Azure Function App - api-dadikidiary
 
 on:
@@ -46,9 +43,7 @@ jobs:
     needs: build
     environment:
       name: "Production"
-      url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
-    permissions:
-      id-token: write #This is required for requesting the JWT
+      url: ${{ steps.fa.outputs.app-url }}
 
     steps:
       - name: Download artifact from build job
@@ -59,13 +54,6 @@ jobs:
       - name: Unzip artifact for deployment
         run: unzip release.zip
 
-      - name: Login to Azure
-        uses: azure/login@v2
-        with:
-          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_DED081A2BAA548C18EA7487870990DD1 }}
-          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_38DF4B3F2AF34A2B8DEBFE91739E3E0C }}
-          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_8752D1B1DB6F4ADEBFB68126DBE26813 }}
-
       - name: "Run Azure Functions Action"
         uses: Azure/functions-action@v1
         id: fa
@@ -73,3 +61,11 @@ jobs:
           app-name: "api-dadikidiary"
           slot-name: "Production"
           package: ${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}
+          publish-profile: ${{ secrets.AZURE_FUNCTIONAPP_PUBLISH_PROFILE }}
+        env:
+          AZURE_DOCUMENT_ENDPOINT: ${{ secrets.AZURE_DOCUMENT_ENDPOINT }}
+          AZURE_DOCUMENT_KEY: ${{ secrets.AZURE_DOCUMENT_KEY }}
+          AZURE_MODEL_ID: ${{ secrets.AZURE_MODEL_ID }}
+          SENDGRID_API_KEY: ${{ secrets.SENDGRID_API_KEY }}
+          EMAIL_FROM_ADDRESS: ${{ secrets.EMAIL_FROM_ADDRESS }}
+          WP_POST_BY_EMAIL_ADDRESS: ${{ secrets.WP_POST_BY_EMAIL_ADDRESS }}

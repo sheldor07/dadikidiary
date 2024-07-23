@@ -52,6 +52,11 @@ app.post("/upload", upload.single("image"), async (req, res) => {
   }
   try {
     await postToWordPress(req.body.title, content);
+    return res
+      .status(200)
+      .send(
+        "The image has been processed and the post has been created on WordPress"
+      );
   } catch (error) {
     console.error("Error:", error.message);
     return res

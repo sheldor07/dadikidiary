@@ -59,9 +59,10 @@ jobs:
         id: fa
         with:
           app-name: "api-dadikidiary"
-          slot-name: "Production"
           package: ${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}
           publish-profile: ${{ secrets.AZURE_FUNCTIONAPP_PUBLISH_PROFILE }}
+          enable-oryx-build: true
+          scm-do-build-during-deployment: true
         env:
           AZURE_DOCUMENT_ENDPOINT: ${{ secrets.AZURE_DOCUMENT_ENDPOINT }}
           AZURE_DOCUMENT_KEY: ${{ secrets.AZURE_DOCUMENT_KEY }}

@@ -1,9 +1,9 @@
 # Dadi Ki Diary
-![Dadi Ki Diary](./media/blog.png)
+![Dadi Ki Diary](./media/diagram.png)
 
-Dadi Ki Diary is a simple initiative to help digitise my dadi's writings. It's a Python script that uses Azure Computer Vision to process images and publish the extracted text to WordPress.
+Dadi Ki Diary is a simple initiative to help digitise my grandmother's writings. Currently, it's a Python script that uses Azure Computer Vision to process images and publish the extracted text to WordPress.
 
-I've open sourced the code here, in case you want to use it or build on top of it, some ideas:
+I've open sourced the code here, in case you want to use it or build on top of it, some ideas I think would be pretty cool are:
 - WhatsApp/Telegram bot interface for uploading blogs
 - Server for everyone to use the service readily etc.
 - and you can even create an MCP server for these endpoints and create an agent for this.

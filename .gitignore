@@ -1,2 +1,12 @@
-*.env
-node_modules
+.venv/
+.env
+__pycache__
+*.jpg
+*.jpeg
+*.png
+*.gif
+*.bmp
+*.tiff
+*.txt
+
+

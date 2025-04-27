@@ -61,20 +61,37 @@ def process_image_ocr(file_buffer: bytes) -> str:
 
 def extract_content(result) -> str:
     """
-    Extract text content from the analysis result
+    Extract text content from the analysis result with intelligent text wrapping.
+    Adds line breaks after sentence ending punctuation (e.g., '.' or '|')
     
     Args:
         result: The analysis result from Azure Computer Vision
         
     Returns:
-        The extracted text content
+        The extracted text content with proper text wrapping
     """
     extracted_content = ""
+    current_paragraph = ""
     
     if result.read is not None:
         for block in result.read.blocks:
             for line in block.lines:
-                extracted_content += line.text + "\n"
+                text = line.text.strip()
+                
+                # Add space between lines unless the current paragraph is empty
+                if current_paragraph and not current_paragraph.endswith(' '):
+                    current_paragraph += " "
+                
+                current_paragraph += text
+                
+                # Check if the text ends with a sentence delimiter
+                if text.endswith('.') or text.endswith('।') or text.endswith('|'):
+                    extracted_content += current_paragraph + "\n"
+                    current_paragraph = ""
+    
+    # Add any remaining text
+    if current_paragraph:
+        extracted_content += current_paragraph
     
     return extracted_content.strip()
 
@@ -129,7 +146,7 @@ async def process_directory(dir_path: str) -> List[Dict[str, str]]:
                 
                 try:
                     content = await process_image(file_buffer)
-                    combined_content += content + " "
+                    combined_content += content + "\n\n"
                     print(f"Processed {image_file}")
                 except Exception as e:
                     print(f"Error processing {image_file}: {str(e)}")

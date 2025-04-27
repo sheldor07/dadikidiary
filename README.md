@@ -28,7 +28,16 @@ Wordpress is pretty much the standard blog service, and the API access is pretty
    - Set a redirect URL (must match what you'll use in your code)
    - Select "Web Client" and create the app
    - Save your client ID and client secret
-3. Get your access token by following instructions in [wordpress_utils.py](./src/utils/wordpress_utils.py)
+3. Set environment variables:
+```bash
+export WORDPRESS_CLIENT_ID="<your_wordpress_client_id>"
+export WORDPRESS_CLIENT_SECRET="<your_wordpress_client_secret>"
+export WORDPRESS_REDIRECT_URI="<your_wordpress_redirect_uri>"
+```
+4. Get your access token by following instructions in [wordpress_utils.py](./src/utils/wordpress_utils.py) by running:
+```bash
+python src/utils/wordpress_utils.py
+```
 
 ### Installation
 
@@ -47,9 +56,6 @@ pip3 install -r requirements.txt
 ```bash
 export VISION_ENDPOINT="<your_vision_endpoint>"
 export VISION_KEY="<your_vision_key>"
-export WORDPRESS_CLIENT_ID="<your_wordpress_client_id>"
-export WORDPRESS_CLIENT_SECRET="<your_wordpress_client_secret>"
-export WORDPRESS_REDIRECT_URI="<your_wordpress_redirect_uri>"
 ```
 
 ### Usage
@@ -61,4 +67,6 @@ python src/main.py
 ### How It Works
 - Images from the `images` directory are processed
 - Extracted text is saved to the `output` directory
+- Text is processed and formatted
 - Content is published to WordPress
+- Processed images are moved to the `processed` directory

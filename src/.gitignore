@@ -8,5 +8,4 @@ __pycache__
 *.bmp
 *.tiff
 *.txt
-
-
+.DS_Store

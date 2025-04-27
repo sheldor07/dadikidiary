@@ -33,10 +33,15 @@ Wordpress is pretty much the standard blog service, and the API access is pretty
 export WORDPRESS_CLIENT_ID="<your_wordpress_client_id>"
 export WORDPRESS_CLIENT_SECRET="<your_wordpress_client_secret>"
 export WORDPRESS_REDIRECT_URI="<your_wordpress_redirect_uri>"
+export WORDPRESS_SITE_IDENTIFIER="<your_wordpress_site_name>.wordpress.com"
 ```
 4. Get your access token by following instructions in [wordpress_utils.py](./src/utils/wordpress_utils.py) by running:
 ```bash
 python src/utils/wordpress_utils.py
+```
+5. Save the access token in your .env file:
+```bash
+export WORDPRESS_ACCESS_TOKEN="<your_wordpress_access_token>"
 ```
 
 ### Installation
